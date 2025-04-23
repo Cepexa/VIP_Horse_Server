@@ -32,7 +32,7 @@ link_directories(vendor/lib)
 
 file(GLOB_RECURSE SOURCE_FILES 
     src/*.cpp
-    main_server.cpp)
+    main.cpp)
 
 add_executable(server ${SOURCE_FILES})
 target_link_libraries(server BinaryProtocol Boost::system Boost::thread)

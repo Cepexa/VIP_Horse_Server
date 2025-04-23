@@ -38,7 +38,3 @@ add_executable(server ${SOURCE_FILES})
 target_link_libraries(server BinaryProtocol Boost::system Boost::thread)
 target_link_libraries(server Procedure)
 target_link_libraries(server pqxx pq)
-
-add_executable(client main_client.cpp src/Client.cpp)
-
-target_link_libraries(client BinaryProtocol Boost::system Boost::thread)

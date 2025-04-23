@@ -47,6 +47,9 @@ void Server::acceptConnections() {
 
 void Server::handleClient(std::shared_ptr<boost::asio::ip::tcp::socket> socket) {
     try {
+        boost::asio::ip::tcp::endpoint remote_ep = socket->remote_endpoint();
+        std::string client_id = remote_ep.address().to_string() + ":" + std::to_string(remote_ep.port());
+        std::cout << "Подключен новый клиент: " << client_id << std::endl;
         while (true) {
             std::vector<uint8_t> buffer(1024);
             boost::system::error_code error;

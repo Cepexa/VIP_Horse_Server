@@ -1,0 +1,2 @@
+add_subdirectory(libClasses)
+add_subdirectory(BinaryProtocol)

@@ -36,5 +36,5 @@ file(GLOB_RECURSE SOURCE_FILES
 
 add_executable(server ${SOURCE_FILES})
 target_link_libraries(server BinaryProtocol Boost::system Boost::thread)
-target_link_libraries(server Procedure)
+target_link_libraries(server libClasses)
 target_link_libraries(server pqxx pq)

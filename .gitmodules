@@ -1,0 +1,8 @@
+[submodule "libs/BinaryProtocol"]
+	path = libs/BinaryProtocol
+	url = ../BinaryProtocol.git
+	branch = master
+[submodule "libs/libClasses"]
+	path = libs/libClasses
+	url = ../libClasses
+	branch = master

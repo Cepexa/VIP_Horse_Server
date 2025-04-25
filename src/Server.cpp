@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+using command = BinaryProtocol::CommandType;
+
 Server::Server(uint16_t port)
     : acceptor_(io_context_, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)) {}
 
@@ -68,31 +70,32 @@ void Server::handleClient(std::shared_ptr<boost::asio::ip::tcp::socket> socket) 
             BinaryProtocol::PacketRequest packet = BinaryProtocol::PacketRequest::fromBinary({buffer.begin(), buffer.begin() + len});
             std::cout << "Получена команда: " << static_cast<int>(packet.header.command) << std::endl;
             pqxx::result res;
-            BinaryProtocol::CommandType response_cmd;
+            command response_cmd;
             // Обработка команды
             switch (packet.header.command)
             {
-            case BinaryProtocol::CommandType::SQL:
-                InfoBase::getInstance().execute_query(packet.getQuery());
-                response_cmd = BinaryProtocol::CommandType::OK;
-                break;                
-            case BinaryProtocol::CommandType::SQLR:
+            case command::SQL:
                 res = InfoBase::getInstance().execute_query(packet.getQuery());
-                response_cmd = BinaryProtocol::CommandType::SQLR;
+                response_cmd = res.empty() ? command::EMPTY : command::OK;
                 break;            
             default:
-                response_cmd = BinaryProtocol::CommandType::ERROR;
+                response_cmd = command::ERROR;
                 break;
             }
 
             // Создаём ответный пакет
             BinaryProtocol::PacketResponse response(response_cmd, packet.header.request_id);
             if (!res.empty()) 
-            { 
-                for (const auto& field : res[0]) {
-                    std::string name = field.name();
-                    //response.addData(name);
-                    //response.addData(field.c_str());
+            {
+                for (const auto& field : GetRecordClassFunctions[0]()->getFields()) {
+                    const std::string& name = field.getName();
+                    if(!field.isPrimaryKey())
+                    {
+                        Variant value = convertFieldVariant(field, res[0][name]);
+                        std::string binary;
+                        std::memcpy(binary.data(), VariantToCStr(value), sizeof(value));
+                        response.addNameValue(name, binary);
+                    }
                 }
             }
 

@@ -65,7 +65,7 @@ void Server::handleClient(std::shared_ptr<boost::asio::ip::tcp::socket> socket) 
             }
 
             // Разбираем пакет
-            auto packet = BinaryProtocol::Packet::fromBinary({buffer.begin(), buffer.begin() + len});
+            BinaryProtocol::PacketRequest packet = BinaryProtocol::PacketRequest::fromBinary({buffer.begin(), buffer.begin() + len});
             std::cout << "Получена команда: " << static_cast<int>(packet.header.command) << std::endl;
             pqxx::result res;
             BinaryProtocol::CommandType response_cmd;
@@ -86,13 +86,13 @@ void Server::handleClient(std::shared_ptr<boost::asio::ip::tcp::socket> socket) 
             }
 
             // Создаём ответный пакет
-            BinaryProtocol::Packet response(response_cmd, packet.header.request_id);
+            BinaryProtocol::PacketResponse response(response_cmd, packet.header.request_id);
             if (!res.empty()) 
             { 
                 for (const auto& field : res[0]) {
                     std::string name = field.name();
-                    response.addData(name);
-                    response.addData(field.c_str());
+                    //response.addData(name);
+                    //response.addData(field.c_str());
                 }
             }
 

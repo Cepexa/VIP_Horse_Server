@@ -91,10 +91,7 @@ void Server::handleClient(std::shared_ptr<boost::asio::ip::tcp::socket> socket) 
                     const std::string& name = field.getName();
                     if(!field.isPrimaryKey())
                     {
-                        Variant value = convertFieldVariant(field, res[0][name]);
-                        std::string binary;
-                        std::memcpy(binary.data(), VariantToCStr(value), sizeof(value));
-                        response.addNameValue(name, binary);
+                        response.addNameValue(name, VariantToCStr(convertFieldVariant(field, res[0][name])));
                     }
                 }
             }
